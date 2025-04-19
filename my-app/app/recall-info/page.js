@@ -11,6 +11,8 @@ import {
 	TableRow,
 	Paper,
 } from "@mui/material";
+import { supabase } from "../lib/supabaseClient";
+import { useRouter } from "next/navigation";
 
 export default function RecallInformationPage() {
 	const [allMeds, setAllMeds] = useState([]);
@@ -20,7 +22,18 @@ export default function RecallInformationPage() {
 	const [lookbackWeeks, setLookbackWeeks] = useState(1);
 	const [recallResults, setRecallResults] = useState([]);
 	const [searched, setSearched] = useState(false);
-  
+
+	const [user, setUser] = useState(null);
+	const router = useRouter();
+
+	useEffect(() => {
+	  const getUser = async () => {
+		const { data } = await supabase.auth.getSession();
+		setUser(data?.session?.user || null);
+	  };
+	  getUser();
+	}, []);
+	
   useEffect(() => {
     if (searched && query.trim()) {
       handleResultClick(query);
@@ -188,6 +201,35 @@ export default function RecallInformationPage() {
 						}}
 						className="w-full p-3 bg-white border border-gray-300 rounded outline-none"
 					/>
+					{user && query.trim() && (
+						<>
+						<button
+							onClick={async () => {
+							const { error } = await supabase
+								.from("watchlist")
+								.insert([{ user_id: user.id,       
+									email: user.email, // add email here
+									medication_name: query.trim() }]);
+
+							if (error) {
+								console.error("Error adding to watchlist:", error.message);
+							} else {
+								alert(`${query.trim()} added to your watchlist.`);
+							}
+							}}
+							className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+						>
+							Add to Watchlist
+						</button>
+						<button
+						onClick={() => router.push("/watchlist")}
+						className="mt-2 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+					  >
+						View Watchlist
+					  </button>
+					  </>
+					)}
+
 
 					{/* Result dropdown */}
 					<ul

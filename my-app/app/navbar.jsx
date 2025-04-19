@@ -2,13 +2,16 @@
 import React, { useEffect, useState } from "react";
 import { AiOutlineHome } from "react-icons/ai";
 import { GiHamburgerMenu } from "react-icons/gi";
-import { IoSettingsOutline } from "react-icons/io5";
 import { BsShare } from "react-icons/bs";
 import { IoIosInformationCircleOutline } from "react-icons/io";
 import { supabase } from "./lib/supabaseClient";
 import Link from "next/link";
 import { MdLogout } from "react-icons/md";
-
+import { GiMedicines } from "react-icons/gi";
+import { TbMapSearch } from "react-icons/tb";
+import { IoWarningOutline } from "react-icons/io5";
+import { RiCalendarScheduleLine } from "react-icons/ri";
+import { MdOutlineSchedule } from "react-icons/md";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -27,33 +30,27 @@ const Navbar = () => {
   };
   const sideList = [
     {
-      icon: <AiOutlineHome className="text-2xl" />,
-      title: "Side Effects",
-      href: "/",
-
-    },
-    {
-      icon: <AiOutlineHome className="text-2xl" />,
+      icon: <GiMedicines  className="text-2xl" />,
       title: "Medication Interactions",
       href: "/med-conflicts",
     },
     {
-      icon: <AiOutlineHome className="text-2xl" />,
+      icon: <TbMapSearch  className="text-2xl" />,
       title: "Medication Availability",
       href: "/med-avail",
     },
     {
-      icon: <AiOutlineHome className="text-2xl" />,
+      icon: <IoWarningOutline   className="text-2xl" />,
       title: "Recall information",
       href: "/recall-info",
     },
     {
-      icon: <AiOutlineHome className="text-2xl" />,
-      title: "Medication Info",
+      icon: <MdOutlineSchedule  className="text-2xl" />,
+      title: "Set Reminders",
       href: "/reminders",
     },
     {
-      icon: <AiOutlineHome className="text-2xl" />,
+      icon: <RiCalendarScheduleLine  className="text-2xl" />,
       title: "View Reminders",
       href: "/view-reminders",
     },
@@ -70,11 +67,7 @@ const Navbar = () => {
       title: "About",
       href: "/about",
     },
-    {
-      icon: <IoSettingsOutline className="text-2xl" />,
-      title: "Settings",
-      href: "/",
-    },
+
     ...(!user
       ? [
         {
