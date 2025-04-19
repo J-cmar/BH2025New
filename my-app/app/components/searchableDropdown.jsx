@@ -56,11 +56,14 @@ export default function SearchableDropdown({
         prev <= 0 ? filtered.length - 1 : prev - 1
       );
     } else if (e.key === "Enter") {
-      e.preventDefault();
-      if (activeIndex >= 0) {
-        handleResultClick(filtered[activeIndex]);
-      }
-    }
+		e.preventDefault();
+        setFiltered([]);
+		if (activeIndex >= 0) {
+			handleResultClick(filtered[activeIndex]);
+		} else if (query.trim() !== "") {
+			handleResultClick(query); // call with what's typed
+		}
+	}
   };
 
   return (
