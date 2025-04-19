@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Navbar from "./navbar";
 
-import { getDrugConflicts } from "./util/conflictsScraper";
+import getDrugConflicts from "./conflictsScraper";
 
 export default function Home() {
   getDrugConflicts();
