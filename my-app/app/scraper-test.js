@@ -11,7 +11,7 @@ const drugName = 'Xanax';
     await page.setViewport({ width: 1080, height: 1024 });
 
     const drugInput = await page.waitForSelector('#DrugName_I');
-    await drugInput.type('Xanax');
+    await drugInput.type(drugName);
     await page.waitForSelector('#DrugName_DDD_L_LBT > tbody');
     const firstResult = await page.waitForSelector('#DrugName_DDD_L_LBT > tbody tr');
 
