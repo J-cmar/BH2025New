@@ -48,3 +48,8 @@ body {
   background: #ddd;
   color: black;
 }
+/* globals.css */
+button,
+a {
+  cursor: pointer;
+}

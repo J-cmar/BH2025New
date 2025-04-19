@@ -24,8 +24,20 @@ export async function POST(request) {
 
         const drugInput = await page.waitForSelector('#DrugName_I');
         await drugInput.type(drugName);
-        await page.waitForSelector('#DrugName_DDD_L_LBT > tbody');
-        const firstResult = await page.waitForSelector('#DrugName_DDD_L_LBT > tbody tr', { timeout: 10000 });
+        // await page.waitForSelector('#DrugName_DDD_L_LBT > tbody');
+        let firstResult;
+        try {
+            firstResult = await page.waitForSelector('#DrugName_DDD_L_LBT > tbody tr', { timeout: 1000 });
+        } catch (error) {
+            if (error.name === 'TimeoutError') {
+                await browser.close();
+                return new Response(
+                    JSON.stringify({ error: "No results found for the provided drug name" }),
+                    { status: 404 }
+                );
+            }
+            throw error; // Re-throw other errors
+        }
 
         console.log('First autocomplete suggestion:', firstResult);
         await delay(200);
@@ -48,6 +60,9 @@ export async function POST(request) {
 
             // Click the "Show Location" button
             const showLocationButton = await store.$('.dxb');
+            if (showLocationButton) {
+                await showLocationButton.evaluate((btn) => btn.scrollIntoView());
+            }
             if (showLocationButton) {
                 await showLocationButton.click();
                 await page.waitForSelector('#PopupControl_PWC-1 > div.row', { timeout: 5000 }); // Wait for locations to load
