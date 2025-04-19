@@ -1,9 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { supabase } from '../supabaseClient.js';
+import { supabase } from '../lib/supabaseClient.js';
 import Navbar from '../navbar';
-import {  useState, useEffect } from 'react';
-import { supabase } from '../supabaseClient.js'; 
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
 import format from 'date-fns/format';
 import parse from 'date-fns/parse';
@@ -38,23 +36,21 @@ export default function ViewReminders() {
         };
 
         fetchReminders();
-
-    }, []);
-
-    return (<>
-        <Navbar className="navbar" />
-
-    const remindersToEvents = (reminders) => {
-        const weekdays = {
-            Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6, Sun: 0,
+        const remindersToEvents = (reminders) => {
+            const weekdays = {
+                Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6, Sun: 0,
+            };
+    
+            const today = new Date();
+            const baseDay = startOfWeek(today, { weekStartsOn: 0 });
+            const events = [];
         };
 
-        const today = new Date();
-        const baseDay = startOfWeek(today, { weekStartsOn: 0 });
-        const events = [];
-    };
+    }, []);
+    return(<>
+        <Navbar className="navbar" />
 
-    return(
+    
         <div className="p-4">
             <h2 className="text-2xl font-bold mb-4">Medication Schedule</h2>
 
