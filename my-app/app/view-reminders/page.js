@@ -8,6 +8,7 @@ import parse from 'date-fns/parse';
 import startOfWeek from 'date-fns/startOfWeek';
 import getDay from 'date-fns/getDay';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
+import { useRouter } from 'next/navigation';
 
 const locales = {
     'en-US': require('date-fns/locale/en-US'),
@@ -23,6 +24,20 @@ const localizer = dateFnsLocalizer({
 
 export default function ViewReminders() {
     const [reminders, setReminders] = useState([]);
+    const router = useRouter();
+    
+    useEffect(() => {
+        const checkUser = async () => {
+            const { data } = await supabase.auth.getSession();
+      console.log(data)
+            if (data.session) {
+                console.log(data); // already logged in
+            } else {
+                router.push("/login"); // force login/signup
+            }
+        };
+        checkUser();
+    }, [router]);
 
     useEffect(() => {
         const fetchReminders = async () => {

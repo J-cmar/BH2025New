@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Navbar from "../navbar";
+import { useRouter } from 'next/navigation';
 
 export default function MedicationAvailabilityPage() {
     const [allMeds, setAllMeds] = useState([]);

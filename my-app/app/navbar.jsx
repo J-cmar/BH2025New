@@ -5,11 +5,26 @@ import { GiHamburgerMenu } from "react-icons/gi";
 import { IoSettingsOutline } from "react-icons/io5";
 import { BsShare } from "react-icons/bs";
 import { IoIosInformationCircleOutline } from "react-icons/io";
+import { supabase } from "./lib/supabaseClient";
 import Link from "next/link";
+import { MdLogout } from "react-icons/md";
+
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [user, setUser] = useState(null);
 
+  useEffect(() => {
+    const getUser = async () => {
+      const { data } = await supabase.auth.getUser();
+      setUser(data?.user || null);
+    };
+    getUser();
+  }, []);
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    window.location.href = "/login"; // or just refresh with location.reload();
+  };
   const sideList = [
     {
       icon: <AiOutlineHome className="text-2xl" />,
@@ -113,6 +128,15 @@ const Navbar = () => {
               </button>
             </Link>
           ))}
+          {user && (
+            <button
+              onClick={handleLogout}
+              className="flex items-center p-3 font-medium mr-2 text-center bg-gray-300 rounded hover:bg-gray-400 focus:outline-none focus:bg-gray-400"
+            >
+              <MdLogout className="text-2xl mr-2" />
+              <span>Logout</span>
+            </button>
+          )}
 
         </div>
       </div>

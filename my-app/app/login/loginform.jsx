@@ -1,44 +1,81 @@
 "use client";
 import { useState } from "react";
 import { supabase } from "../lib/supabaseClient";
+import Navbar from "../navbar";
 
-export default function AuthForm() {
+export default function LoginForm() {
 	const [email, setEmail] = useState("");
+	const [password, setPassword] = useState("");
+	const [mode, setMode] = useState("login"); // or "signup"
 	const [loading, setLoading] = useState(false);
 	const [message, setMessage] = useState("");
-	const [mode, setMode] = useState("login"); // 'login' or 'signup'
+	const [error, setError] = useState("");
 
 	const handleAuth = async (e) => {
 		e.preventDefault();
 		setLoading(true);
 		setMessage("");
+		setError("");
 
-		const action = mode === "login" ? "signInWithOtp" : "signUp";
-		const { error } =
-			mode === "login"
-				? await supabase.auth.signInWithOtp({ email })
-				: await supabase.auth.signUp({ email });
-
-		if (error) {
-			setMessage("Error: " + error.message);
-		} else {
-			setMessage("Check your email for a magic link!");
+		if (!email || !password) {
+			setError("Please enter both email and password.");
+			setLoading(false);
+			return;
 		}
+
+		try {
+			let res;
+			if (mode === "login") {
+				res = await supabase.auth.signInWithPassword({
+					email,
+					password,
+				});
+			} else {
+				res = await supabase.auth.signUp({
+					email,
+					password,
+				});
+			}
+
+			if (res.error) {
+				setError(res.error.message);
+			} else {
+				setMessage(
+					mode === "signup"
+						? "Check your email to confirm your account."
+						: "Login successful!"
+				);
+				if (mode === "login") window.location.href = "/";
+			}
+		} catch (err) {
+			setError("Unexpected error.");
+		}
+
 		setLoading(false);
 	};
 
-	return (
+	return (<>
+		<Navbar className="navbar" />
 		<div className="max-w-md mx-auto mt-20 p-6 border rounded bg-white shadow">
-			<h2 className="text-2xl font-semibold mb-4 text-center">
-				{mode === "login" ? "Login" : "Sign Up"}
+			<h2 className="text-2xl font-bold mb-4 text-center">
+				{mode === "login" ? "Log In" : "Sign Up"}
 			</h2>
+
 			<form onSubmit={handleAuth}>
 				<input
 					type="email"
-					placeholder="Your email"
-					className="w-full p-3 border mb-4 rounded"
+					placeholder="Email"
 					value={email}
 					onChange={(e) => setEmail(e.target.value)}
+					className="w-full p-3 mb-3 border rounded"
+					required
+				/>
+				<input
+					type="password"
+					placeholder="Password"
+					value={password}
+					onChange={(e) => setPassword(e.target.value)}
+					className="w-full p-3 mb-4 border rounded"
 					required
 				/>
 				<button
@@ -47,14 +84,14 @@ export default function AuthForm() {
 					disabled={loading}
 				>
 					{loading
-						? "Sending..."
+						? "Please wait..."
 						: mode === "login"
-						? "Send Login Link"
-						: "Send Sign Up Link"}
+						? "Log In"
+						: "Sign Up"}
 				</button>
 			</form>
 
-			<p className="mt-4 text-center text-sm">
+			<p className="mt-4 text-center text-sm text-gray-600">
 				{mode === "login" ? (
 					<>
 						Don't have an account?{" "}
@@ -62,7 +99,7 @@ export default function AuthForm() {
 							className="text-blue-600 underline"
 							onClick={() => setMode("signup")}
 						>
-							Sign Up
+							Sign up here
 						</button>
 					</>
 				) : (
@@ -72,17 +109,19 @@ export default function AuthForm() {
 							className="text-blue-600 underline"
 							onClick={() => setMode("login")}
 						>
-							Log In
+							Log in here
 						</button>
 					</>
 				)}
 			</p>
 
 			{message && (
-				<p className="text-sm mt-4 text-center text-gray-600">
-					{message}
-				</p>
+				<p className="mt-3 text-green-600 text-center">{message}</p>
+			)}
+			{error && (
+				<p className="mt-3 text-red-600 text-center">{error}</p>
 			)}
 		</div>
+		</>
 	);
 }

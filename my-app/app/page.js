@@ -3,21 +3,9 @@ import Image from "next/image";
 import Navbar from "./navbar";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { supabase } from "./lib/supabaseClient";
 
 export default function Home() {
-  const router = useRouter();
-
-	useEffect(() => {
-		const checkUser = async () => {
-			const { data } = await supabase.auth.getSession();
-			if (data.session) {
-				router.push("/dashboard"); // already logged in
-			} else {
-				router.push("/login"); // force login/signup
-			}
-		};
-		checkUser();
-	}, [router]);
 
   return (<>
     <Navbar className = "navbar"/>

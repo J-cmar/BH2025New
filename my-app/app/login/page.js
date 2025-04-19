@@ -1,6 +1,7 @@
+"use client";
 // app/login/page.js or pages/login.js
-import AuthForm from "./loginform";
+import LoginForm from "./loginform";
 
 export default function LoginPage() {
-	return <AuthForm />;
+	return (LoginForm()) ;
 }

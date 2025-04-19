@@ -2,12 +2,28 @@
 import { useState } from "react";
 import { supabase } from "../lib/supabaseClient.js";
 import Navbar from "../navbar";
+import { useRouter } from 'next/navigation';
+import { useEffect } from "react";
 
 export default function MedicationInfo() {
 	const [medication, setMedication] = useState("");
 	const [type, setType] = useState("");
 	const [days, setDays] = useState([]);
 	const [times, setTimes] = useState([]);
+	const router = useRouter();
+	
+		useEffect(() => {
+			const checkUser = async () => {
+				const { data } = await supabase.auth.getSession();
+		  console.log(data)
+				if (data.session) {
+					console.log(data); // already logged in
+				} else {
+					router.push("/login"); // force login/signup
+				}
+			};
+			checkUser();
+		}, [router]);
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
