@@ -37,6 +37,11 @@ const Navbar = () => {
       title: "Medication Info",
       href: "/reminders",
     },
+    {
+      icon: <AiOutlineHome className="text-2xl" />,
+      title: "View Reminders",
+      href: "/view-reminders",
+    },
   ];
 
   const navList = [
