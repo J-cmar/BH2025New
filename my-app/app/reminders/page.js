@@ -78,6 +78,7 @@ export default function MedicationInfo() {
 	return (
 		<>
 			<Navbar className="navbar" />
+<<<<<<< Updated upstream
 			<form onSubmit={handleSubmit} className="p-4 space-y-4 max-w-xl mx-auto relative">
 				<div className="relative">
 					<input
@@ -129,6 +130,19 @@ export default function MedicationInfo() {
 					</ul>
 				</div>
 
+=======
+      <h1 className="text-2xl font-bold mb-2 ml-6 mt-6">Add Medications</h1>
+      <p className="text-2xl font-bold mb-4 ml-6 mt-6">Use the form below to add a medication by its <br/> name, type, time and days to take</p>
+      
+			<form onSubmit={handleSubmit} className="p-4 space-y-4">
+				<input
+					type="text"
+					placeholder="Enter the medication name"
+					value={medication}
+					onChange={(e) => setMedication(e.target.value)}
+					className="border p-2 w-full"
+				/>
+>>>>>>> Stashed changes
 				<input
 					type="text"
 					placeholder="Enter the type/purpose of the medication"
