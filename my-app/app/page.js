@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import Navbar from "./navbar"; // adjust the path as needed
+import Navbar from "./navbar";
 
 export default function HomePage() {
   return (
@@ -42,7 +42,7 @@ export default function HomePage() {
           </div>
         </header>
 
-        {/* Optional Section: Most Popular Medications */}
+        {/* Most Popular Medications */}
         <section className="w-full max-w-3xl bg-white p-6 rounded shadow">
           <h2 className="text-2xl font-semibold mb-4">Most Popular Medications</h2>
           <div className="grid grid-cols-2 gap-4 text-center">
