@@ -1,7 +1,7 @@
 "use client";
 import { useState } from 'react';
 import { supabase } from '../supabaseClient.js'; 
-import Navbar from "./navbar";
+import Navbar from "../navbar";
 
 export default function MedicationInfo() {
     const [medication, setMedication] = useState('');
