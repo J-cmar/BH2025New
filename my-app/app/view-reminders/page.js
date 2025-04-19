@@ -1,9 +1,7 @@
 'use client';
-<<<<<<< Updated upstream
 import { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient.js';
 import Navbar from '../navbar';
-=======
 import {  useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient.js'; 
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
@@ -24,7 +22,6 @@ const localizer = dateFnsLocalizer({
     getDay,
     locales,
 });
->>>>>>> Stashed changes
 
 export default function ViewReminders() {
     const [reminders, setReminders] = useState([]);
@@ -44,10 +41,9 @@ export default function ViewReminders() {
 
     }, []);
 
-<<<<<<< Updated upstream
     return (<>
         <Navbar className="navbar" />
-=======
+
     const remindersToEvents = (reminders) => {
         const weekdays = {
             Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6, Sun: 0,
@@ -59,7 +55,6 @@ export default function ViewReminders() {
     };
 
     return(
->>>>>>> Stashed changes
         <div className="p-4">
             <h2 className="text-2xl font-bold mb-4">Medication Schedule</h2>
 
