@@ -34,8 +34,8 @@ const Navbar = () => {
     },
     {
       icon: <AiOutlineHome className="text-2xl" />,
-      title: "Medication Conflicts",
-      href: "/",
+      title: "Medication Interactions",
+      href: "/med-conflicts",
     },
     {
       icon: <AiOutlineHome className="text-2xl" />,
