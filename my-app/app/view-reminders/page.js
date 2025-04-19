@@ -44,18 +44,10 @@ export default function ViewReminders() {
 
     useEffect(() => {
         const fetchReminders = async () => {
-            const {
-                data: { user },
-            } = await supabase.auth.getUser();
-
-            const { data, error } = await supabase
-                .from('medication_schedule')
-                .select('*')
-                .eq('user_id', user.id);
+            const { data, error } = await supabase.from('medication_schedule').select('*');
 
             if (error) {
                 console.log(`Error fetching reminders: ${error.message}`);
-                return;
             }
 
             setReminders(data || []);
@@ -65,9 +57,12 @@ export default function ViewReminders() {
         fetchReminders();
     }, []);
 
-    const remindersToEvents = (reminders, weeksToShow = 4) => {
-        const weekdays = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 };
-        const events = [];
+
+    const remindersToEvents = (reminders) => {
+        const weekdays = {
+            Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6
+        };
+
         const today = new Date();
         // Base week start of the current week
         const currentWeekStart = startOfWeek(today, { weekStartsOn: 0 });
@@ -116,41 +111,65 @@ export default function ViewReminders() {
         return events;
     };
 
-    return (
-        <>
-            <Navbar className="navbar" />
-            <div className="p-4">
-                <h2 className="text-2xl font-bold mb-4">Medication Schedule</h2>
-                {reminders.length === 0 ? (
-                    <p>No reminders found.</p>
-                ) : (
-                    <ul className="space-y-4">
-                        {reminders.map((r) => (
-                            <li key={r.id} className="border p-4 rounded shadow">
+    const handleDelete = async (reminderId) => {
+        const { error } = await supabase
+            .from("medication_schedule")
+            .delete()
+            .eq("id", reminderId);
+
+        if (error) {
+            console.error("Failed to delete reminder:", error.message);
+            alert("Failed to delete. Try again.");
+        } else {
+            setReminders((prev) => prev.filter((r) => r.id !== reminderId));
+            setEvents((prev) => prev.filter((e) => e.id !== reminderId));
+        }
+    };
+
+
+
+    return (<>
+        <Navbar className="navbar" />
+
+
+        <div className="p-4">
+            <h2 className="text-2xl font-bold mb-4">Medication Schedule</h2>
+
+            {reminders.length === 0 ? (
+                <p>No reminders found.</p>
+            ) : (
+                <ul className="space-y-4">
+                    {reminders.map((r) => (
+                        <li key={r.id} className="border p-4 rounded shadow flex justify-between items-start">
+                            <div>
                                 <h3 className="text-lg font-semibold">{r.medication_name}</h3>
                                 <p>Type: {r.medication_type}</p>
                                 <p>Days: {r.days?.join(', ')}</p>
                                 <p>Times: {r.times?.join(', ')}</p>
-                            </li>
-                        ))}
-                    </ul>
-                )}
-            </div>
-            <div>
-                <h2 className="text-xl font-semibold mt-8 mb-4">Calendar View</h2>
-                <Calendar
-                    localizer={localizer}
-                    events={events}
-                    startAccessor="start"
-                    endAccessor="end"
-                    style={{ height: 600 }}
-                    date={currentDate}
-                    view={currentView}
-                    defaultView="week"
-                    onNavigate={(date) => setCurrentDate(date)}
-                    onView={(view) => setCurrentView(view)}
-                />
-            </div>
-        </>
+                            </div>
+                            <button
+                                onClick={() => handleDelete(r.id)}
+                                className="text-red-600 font-semibold hover:underline ml-4"
+                            >
+                                🗑️ Delete
+                            </button>
+                        </li>
+                    ))}
+
+                </ul>
+            )}
+        </div>
+        <div>
+            <h2 className="text-xl font-semibold mt-8 mb-4">Calendar View</h2>
+            <Calendar
+                localizer={localizer}
+                events={events}
+                startAccessor="start"
+                endAccessor="end"
+                style={{ height: 600 }}
+                defaultView="week"
+            />
+        </div>
+    </>
     );
 }
