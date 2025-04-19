@@ -1,17 +1,26 @@
 import puppeteer from 'puppeteer';
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+const drugName = 'Xanax';
+
 
 (async () => {
-    const browser = await puppeteer.launch({ headless: false });
+    const browser = await puppeteer.launch({ headless: true });
     const page = await browser.newPage();
 
     await page.goto('https://scriptcost.com/scriptcycle/DrugPriceLookup/DrugLookupResult');
     await page.setViewport({ width: 1080, height: 1024 });
     const drugInput = await page.waitForSelector('#DrugName_I');
-    await drugInput.type('Ozempic');
+    await drugInput.type(drugName.slice(0, -1));
     await page.waitForSelector('#DrugName_DDD_L_LBT > tbody')
     const firstResult = await page.waitForSelector('#DrugName_DDD_L_LBT > tbody tr'); // selector for autocomplete table
+
+    const [tbodyHandle] = await page.$$('::-p-xpath(//*[@id="DrugName_DDD_L_LBT"]/tbody)');
+
+    const rowCount = await tbodyHandle.evaluate(tbody => tbody.querySelectorAll('tr').length);
+
+    console.log('Row count:', rowCount);
+
 
     console.log('First autocomplete suggestion:', firstResult);
     await delay(200);
@@ -35,8 +44,6 @@ const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
     console.log('Drug Prices by Store:\n', stores);
 
-
-    await delay(10000)
     await browser.close();
 })();
 
