@@ -40,8 +40,17 @@ export default function MedicationAvailabilityPage() {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ drugName: query }),
             });
-            const data = await res.json();
-            setResults(data.results);
+            if (res.status === 404) {
+                const data = await res.json();
+                setError(data.error);
+                setResults(null);
+            } else if (res.ok) {
+                const data = await res.json();
+                setResults(data.results);
+            } else {
+                throw new Error("unexpected error occurred")
+            }
+
         } catch (err) {
             console.log(err);
             setError("Failed to fetch medication availability.");
