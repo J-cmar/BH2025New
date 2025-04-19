@@ -111,7 +111,7 @@ const Navbar = () => {
         </button>
 
         <img
-          src="https://i.imgur.com/520zDfd.png"
+          src="https://media.discordapp.net/attachments/1350336370626789426/1363251659324653588/Screenshot_2025-04-19_133128.png?ex=68055a8b&is=6804090b&hm=d88d687c1f8bd935bf3357e77d7de64f43dd4b1a8e21e253bbc106a140cefd47&=&format=webp&quality=lossless&width=1560&height=926"
           alt="Logo"
           className="h-auto w-24"
         />
@@ -159,7 +159,7 @@ const Navbar = () => {
       >
         <span className="flex w-full items-center p-4 border-b">
           <img
-            src="https://i.imgur.com/520zDfd.png"
+            src="https://media.discordapp.net/attachments/1350336370626789426/1363251659324653588/Screenshot_2025-04-19_133128.png?ex=68055a8b&is=6804090b&hm=d88d687c1f8bd935bf3357e77d7de64f43dd4b1a8e21e253bbc106a140cefd47&=&format=webp&quality=lossless&width=1560&height=926"
             alt="Logo"
             className="h-auto w-32 mx-auto"
           />
