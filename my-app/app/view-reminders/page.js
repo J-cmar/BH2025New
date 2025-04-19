@@ -43,31 +43,36 @@ export default function ViewReminders() {
 
     const remindersToEvents = (reminders) => {
         const weekdays = {
-            Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6, Sun: 0
+            Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6
         };
-
+    
         const today = new Date();
         const baseWeekStart = startOfWeek(today, { weekStartsOn: 0 });
-
+    
         const events = [];
-
+    
         reminders.forEach((item) => {
-            item.days?.forEach((dayStr) => {
-                const dayAbbrev = dayStr.slice(0, 3);
+            const days = Array.isArray(item.days) ? item.days : [];
+            const times = Array.isArray(item.times) ? item.times : [];
+    
+            days.forEach((dayStr) => {
+                const dayAbbrev = dayStr.slice(0, 3).toLowerCase().replace(/^./, str => str.toUpperCase());
                 const weekdayNum = weekdays[dayAbbrev];
-
-                item.times?.forEach((timeStr) => {
+    
+                if (weekdayNum === undefined) return;
+    
+                times.forEach((timeStr) => {
                     const [hour, minute] = timeStr.split(':').map(Number);
                     const eventDate = new Date(baseWeekStart);
-
+    
                     eventDate.setDate(baseWeekStart.getDate() + ((weekdayNum - baseWeekStart.getDay() + 7) % 7));
                     eventDate.setHours(hour);
                     eventDate.setMinutes(minute);
                     eventDate.setSeconds(0);
-
+    
                     const endDate = new Date(eventDate);
                     endDate.setMinutes(endDate.getMinutes() + 30);
-
+    
                     events.push({
                         title: `${item.medication_name} (${item.medication_type})`,
                         start: eventDate,
@@ -77,9 +82,10 @@ export default function ViewReminders() {
                 });
             });
         });
-
+    
         return events;
     };
+    
 
     return(<>
         <Navbar className="navbar" />
