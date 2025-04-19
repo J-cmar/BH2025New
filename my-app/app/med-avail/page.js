@@ -9,6 +9,7 @@ export default function MedicationAvailabilityPage() {
     const [results, setResults] = useState(null); // Store scraping results
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [expandedIndices, setExpandedIndices] = useState([]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -48,6 +49,14 @@ export default function MedicationAvailabilityPage() {
         }
     };
 
+    const toggleExpanded = (idx) => {
+        if (expandedIndices.includes(idx)) {
+            setExpandedIndices(expandedIndices.filter((i) => i !== idx));
+        } else {
+            setExpandedIndices([...expandedIndices, idx]);
+        }
+    };
+
     return (
         <>
             <Navbar />
@@ -80,22 +89,31 @@ export default function MedicationAvailabilityPage() {
                     {results && (
                         <div className="mt-4">
                             <h2 className="text-xl font-semibold">Results:</h2>
-                            <ul>
+                            <ul className="space-y-4">
                                 {results.map((store, idx) => (
-                                    <li key={idx}>
-                                        <strong>{store.name}</strong>: {store.price}
-                                        <ul>
-                                            {store.locations.map((location, locIdx) => (
-                                                <li key={locIdx}>{location}</li>
-                                            ))}
-                                        </ul>
+                                    <li key={idx} className="border p-4 rounded shadow">
+                                        <div className="flex justify-between items-center">
+                                            <span>
+                                                <strong>{store.name}</strong>: {store.price}
+                                            </span>
+                                            <button
+                                                onClick={() => toggleExpanded(idx)}
+                                                className="text-blue-500 hover:underline"
+                                            >
+                                                {expandedIndices.includes(idx)
+                                                    ? "Hide Locations"
+                                                    : "Show Locations"}
+                                            </button>
+                                        </div>
+                                        {expandedIndices.includes(idx) && (
+                                            <div className="mt-4">
+                                                {/* Render a dropdown or collapsible section */}
+                                                <Map addresses={store.locations} />
+                                            </div>
+                                        )}
                                     </li>
                                 ))}
                             </ul>
-                            {/* Pass addresses to the Map component */}
-                            <Map
-                                addresses={results.flatMap((store) => store.locations)}
-                            />
                         </div>
                     )}
                 </div>
