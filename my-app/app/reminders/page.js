@@ -16,7 +16,7 @@ export default function MedicationInfo() {
   
       const { error } = await supabase.from('medication_schedule').insert([
         {
-          user_id: user?.id || null, // you can hardcode for now if no auth
+          user_id: user?.id || null,
           medication_name: medication,
           medication_type: type,
           days,
