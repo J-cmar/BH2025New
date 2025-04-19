@@ -28,17 +28,18 @@ export default function ViewReminders() {
     useEffect(() => {
         const fetchReminders = async () => {
             const { data, error } = await supabase.from('medication_schedule').select('*');
-
+    
             if (error) {
                 console.log(`Error fetching reminders: ${error.message}`);
             }
-
+    
             setReminders(data || []);
+            setEvents(remindersToEvents(data || [])); // 👈 this line adds your calendar events
         };
-
+    
         fetchReminders();
-
     }, []);
+    
 
     const remindersToEvents = (reminders) => {
         const weekdays = {
