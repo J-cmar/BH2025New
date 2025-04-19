@@ -1,9 +1,8 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabaseClient.js";
 import Navbar from "../navbar";
-import { useRouter } from 'next/navigation';
-import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function MedicationInfo() {
 	const [medication, setMedication] = useState("");
@@ -11,26 +10,53 @@ export default function MedicationInfo() {
 	const [days, setDays] = useState([]);
 	const [times, setTimes] = useState([]);
 	const router = useRouter();
-	
-		useEffect(() => {
-			const checkUser = async () => {
-				const { data } = await supabase.auth.getSession();
-		  console.log(data)
-				if (data.session) {
-					console.log(data); // already logged in
-				} else {
-					router.push("/login"); // force login/signup
-				}
-			};
-			checkUser();
-		}, [router]);
+
+	const [allMeds, setAllMeds] = useState([]);
+	const [filtered, setFiltered] = useState([]);
+	const [activeIndex, setActiveIndex] = useState(-1);
+
+	useEffect(() => {
+		const checkUser = async () => {
+			const { data } = await supabase.auth.getSession();
+			if (!data.session) {
+				router.push("/login");
+			}
+		};
+		checkUser();
+	}, [router]);
+
+	// Load all medication names
+	useEffect(() => {
+		const fetchData = async () => {
+			const res = await fetch("/data/medication_names.json");
+			const data = await res.json();
+			setAllMeds(data);
+		};
+		fetchData();
+	}, []);
+
+	// Filter dropdown as user types
+	useEffect(() => {
+		if (medication === "") {
+			setFiltered([]);
+			setActiveIndex(-1);
+			return;
+		}
+		const search = medication.toLowerCase();
+		const matches = allMeds
+			.filter((name) => name.toLowerCase().includes(search))
+			.sort()
+			.slice(0, 5);
+		setFiltered(matches);
+		setActiveIndex(-1);
+	}, [medication, allMeds]);
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 
 		const {
 			data: { user },
-		} = await supabase.auth.getUser(); 
+		} = await supabase.auth.getUser();
 
 		const { error } = await supabase.from("medication_schedule").insert([
 			{
@@ -52,14 +78,57 @@ export default function MedicationInfo() {
 	return (
 		<>
 			<Navbar className="navbar" />
-			<form onSubmit={handleSubmit} className="p-4 space-y-4">
-				<input
-					type="text"
-					placeholder="Enter the medication name"
-					value={medication}
-					onChange={(e) => setMedication(e.target.value)}
-					className="border p-2 w-full"
-				/>
+			<form onSubmit={handleSubmit} className="p-4 space-y-4 max-w-xl mx-auto relative">
+				<div className="relative">
+					<input
+						type="text"
+						placeholder="Enter the medication name"
+						value={medication}
+						onChange={(e) => setMedication(e.target.value)}
+						onKeyDown={(e) => {
+							if (filtered.length === 0) return;
+							if (e.key === "ArrowDown") {
+								e.preventDefault();
+								setActiveIndex((prev) => (prev + 1) % filtered.length);
+							} else if (e.key === "ArrowUp") {
+								e.preventDefault();
+								setActiveIndex((prev) =>
+									prev <= 0 ? filtered.length - 1 : prev - 1
+								);
+							} else if (e.key === "Enter") {
+								e.preventDefault();
+								if (activeIndex >= 0) {
+									setMedication(filtered[activeIndex]);
+									setFiltered([]);
+								}
+							}
+						}}
+						className="border p-2 w-full"
+					/>
+					<ul
+						className={`absolute z-10 bg-white border border-gray-300 rounded mt-1 shadow w-full ${
+							filtered.length > 0 ? "" : "hidden"
+						}`}
+					>
+						{filtered.map((name, idx) => (
+							<li
+								key={idx}
+								className={`px-3 py-2 cursor-pointer ${
+									activeIndex === idx
+										? "bg-gray-200"
+										: "hover:bg-gray-100"
+								}`}
+								onClick={() => {
+									setMedication(name);
+									setFiltered([]);
+								}}
+							>
+								{name}
+							</li>
+						))}
+					</ul>
+				</div>
+
 				<input
 					type="text"
 					placeholder="Enter the type/purpose of the medication"
@@ -70,13 +139,14 @@ export default function MedicationInfo() {
 
 				<input
 					type="text"
-					placeholder="Enter the dosage days"
+					placeholder="Enter the dosage days (ie. Monday,Tuesday,...)"
 					onChange={(e) => setDays(e.target.value.split(","))}
 					className="border p-2 w-full"
 				/>
+
 				<input
 					type="text"
-					placeholder="Enter the dosage times"
+					placeholder="Enter the dosage times (ie. 4:00, 13:00, 18:30)"
 					onChange={(e) => setTimes(e.target.value.split(","))}
 					className="border p-2 w-full"
 				/>
