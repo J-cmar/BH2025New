@@ -107,8 +107,14 @@ export default function MedicationAvailabilityPage() {
                                         </div>
                                         {expandedIndices.includes(idx) && (
                                             <div className="mt-4">
-                                                {/* Render a dropdown or collapsible section */}
+                                                {/* Render the map for this store */}
                                                 <Map addresses={store.locations} />
+                                                {/* List the locations */}
+                                                <ul className="mt-2 list-disc pl-5">
+                                                    {store.locations.map((location, locIdx) => (
+                                                        <li key={locIdx}>{location}</li>
+                                                    ))}
+                                                </ul>
                                             </div>
                                         )}
                                     </li>
