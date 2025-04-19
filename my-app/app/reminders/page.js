@@ -3,17 +3,36 @@ import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabaseClient.js";
 import Navbar from "../navbar";
 import { useRouter } from "next/navigation";
-
+import { useRef } from "react";
 export default function MedicationInfo() {
 	const [medication, setMedication] = useState("");
 	const [type, setType] = useState("");
 	const [days, setDays] = useState([]);
 	const [times, setTimes] = useState([]);
-	const router = useRouter();
-
 	const [allMeds, setAllMeds] = useState([]);
 	const [filtered, setFiltered] = useState([]);
 	const [activeIndex, setActiveIndex] = useState(-1);
+
+	const router = useRouter();
+	const inputRef = useRef(null);
+	const wrapperRef = useRef(null);
+
+	// Close dropdown if clicked outside
+	useEffect(() => {
+		const handleClickOutside = (event) => {
+			if (
+				wrapperRef.current &&
+				!wrapperRef.current.contains(event.target)
+			) {
+				setFiltered([]);
+				setActiveIndex(-1);
+			}
+		};
+		document.addEventListener("mousedown", handleClickOutside);
+		return () => {
+			document.removeEventListener("mousedown", handleClickOutside);
+		};
+	}, []);
 
 	useEffect(() => {
 		const checkUser = async () => {
@@ -25,7 +44,6 @@ export default function MedicationInfo() {
 		checkUser();
 	}, [router]);
 
-	// Load all medication names
 	useEffect(() => {
 		const fetchData = async () => {
 			const res = await fetch("/data/medication_names.json");
@@ -35,7 +53,6 @@ export default function MedicationInfo() {
 		fetchData();
 	}, []);
 
-	// Filter dropdown as user types
 	useEffect(() => {
 		if (medication === "") {
 			setFiltered([]);
@@ -78,19 +95,32 @@ export default function MedicationInfo() {
 	return (
 		<>
 			<Navbar className="navbar" />
-<<<<<<< Updated upstream
-			<form onSubmit={handleSubmit} className="p-4 space-y-4 max-w-xl mx-auto relative">
-				<div className="relative">
+			<form
+				onSubmit={handleSubmit}
+				className="p-4 space-y-4 max-w-xl mx-auto relative"
+			>
+				<h1 className="text-2xl font-bold mb-2">Add Medications</h1>
+				<p className="text-base mb-4 text-gray-700">
+					Use the form below to add a medication by its name, type,
+					time and days to take.
+				</p>
+
+				{/* Medication Name Search Input */}
+				<div className="relative" ref={wrapperRef}>
 					<input
+						ref={inputRef}
 						type="text"
 						placeholder="Enter the medication name"
 						value={medication}
 						onChange={(e) => setMedication(e.target.value)}
 						onKeyDown={(e) => {
 							if (filtered.length === 0) return;
+
 							if (e.key === "ArrowDown") {
 								e.preventDefault();
-								setActiveIndex((prev) => (prev + 1) % filtered.length);
+								setActiveIndex(
+									(prev) => (prev + 1) % filtered.length
+								);
 							} else if (e.key === "ArrowUp") {
 								e.preventDefault();
 								setActiveIndex((prev) =>
@@ -100,8 +130,11 @@ export default function MedicationInfo() {
 								e.preventDefault();
 								if (activeIndex >= 0) {
 									setMedication(filtered[activeIndex]);
-									setFiltered([]);
 								}
+								setFiltered([]);
+							} else if (e.key === "Escape") {
+								setFiltered([]);
+								setActiveIndex(-1);
 							}
 						}}
 						className="border p-2 w-full"
@@ -130,19 +163,6 @@ export default function MedicationInfo() {
 					</ul>
 				</div>
 
-=======
-      <h1 className="text-2xl font-bold mb-2 ml-6 mt-6">Add Medications</h1>
-      <p className="text-2xl font-bold mb-4 ml-6 mt-6">Use the form below to add a medication by its <br/> name, type, time and days to take</p>
-      
-			<form onSubmit={handleSubmit} className="p-4 space-y-4">
-				<input
-					type="text"
-					placeholder="Enter the medication name"
-					value={medication}
-					onChange={(e) => setMedication(e.target.value)}
-					className="border p-2 w-full"
-				/>
->>>>>>> Stashed changes
 				<input
 					type="text"
 					placeholder="Enter the type/purpose of the medication"
@@ -167,7 +187,7 @@ export default function MedicationInfo() {
 
 				<button
 					type="submit"
-					className="bg-blue-600 text-white px-4 py-2 rounded"
+					className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
 				>
 					Save Reminder
 				</button>
