@@ -34,7 +34,7 @@ export default function ViewReminders() {
             }
     
             setReminders(data || []);
-            setEvents(remindersToEvents(data || [])); // 👈 this line adds your calendar events
+            setEvents(remindersToEvents(data || [])); 
         };
     
         fetchReminders();

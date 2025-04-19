@@ -14,7 +14,7 @@ export default function MedicationInfo() {
 
 		const {
 			data: { user },
-		} = await supabase.auth.getUser(); // only if using auth
+		} = await supabase.auth.getUser(); 
 
 		const { error } = await supabase.from("medication_schedule").insert([
 			{
