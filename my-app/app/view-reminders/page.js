@@ -44,18 +44,36 @@ export default function ViewReminders() {
 
     useEffect(() => {
         const fetchReminders = async () => {
-            const { data, error } = await supabase.from('medication_schedule').select('*');
-
-            if (error) {
-                console.log(`Error fetching reminders: ${error.message}`);
-            }
-
-            setReminders(data || []);
-            setEvents(remindersToEvents(data || []));
+          // ✅ Get the currently logged-in user
+          const {
+            data: { user },
+            error: userError,
+          } = await supabase.auth.getUser();
+      
+          if (userError || !user) {
+            console.error("User not logged in or error retrieving user");
+            router.push("/login");
+            return;
+          }
+      
+          // ✅ Fetch reminders for that user only
+          const { data, error } = await supabase
+            .from("medication_schedule")
+            .select("*")
+            .eq("user_id", user.id); // ✅ filter only current user's data
+      
+          if (error) {
+            console.error("Error fetching reminders:", error.message);
+            return;
+          }
+      
+          setReminders(data || []);
+          setEvents(remindersToEvents(data || []));
         };
-
+      
         fetchReminders();
-    }, []);
+      }, []);
+      
 
 
     const remindersToEvents = (reminders) => {
