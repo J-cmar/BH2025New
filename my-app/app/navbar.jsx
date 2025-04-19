@@ -75,6 +75,15 @@ const Navbar = () => {
       title: "Settings",
       href: "/",
     },
+    ...(!user
+      ? [
+        {
+          icon: <AiOutlineHome className="text-2x1 mr-2" />,
+          title: "Sign In",
+          href: "/login",
+        },
+      ]
+      : []),
   ];
 
   const handleDrawer = () => {
