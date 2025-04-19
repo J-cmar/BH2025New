@@ -42,27 +42,18 @@ export default function ViewReminders() {
 
     useEffect(() => {
         const fetchReminders = async () => {
-          const {
-            data: { user },
-          } = await supabase.auth.getUser();
-      
-          const { data, error } = await supabase
-            .from('medication_schedule')
-            .select('*')
-            .eq('user_id', user.id);
-      
-          if (error) {
-            console.log(`Error fetching reminders: ${error.message}`);
-            return;
-          }
-      
-          setReminders(data || []);
-          setEvents(remindersToEvents(data || []));
+            const { data, error } = await supabase.from('medication_schedule').select('*');
+    
+            if (error) {
+                console.log(`Error fetching reminders: ${error.message}`);
+            }
+    
+            setReminders(data || []);
+            setEvents(remindersToEvents(data || [])); 
         };
-      
+    
         fetchReminders();
-      }, []);
-      
+    }, []);
     
 
     const remindersToEvents = (reminders) => {
@@ -109,6 +100,22 @@ export default function ViewReminders() {
     
         return events;
     };
+
+    const handleDelete = async (reminderId) => {
+        const { error } = await supabase
+          .from("medication_schedule")
+          .delete()
+          .eq("id", reminderId);
+      
+        if (error) {
+          console.error("Failed to delete reminder:", error.message);
+          alert("Failed to delete. Try again.");
+        } else {
+          setReminders((prev) => prev.filter((r) => r.id !== reminderId));
+          setEvents((prev) => prev.filter((e) => e.id !== reminderId));
+        }
+      };
+      
     
 
     return(<>
@@ -123,13 +130,22 @@ export default function ViewReminders() {
             ) : (
                 <ul className="space-y-4">
                     {reminders.map((r) => (
-                        <li key={r.id} className="border p-4 rounded shadow">
-                            <h3 className="text-lg font-semibold">{r.medication_name}</h3>
-                            <p>Type: {r.medication_type}</p>
-                            <p>Days: {r.days?.join(', ')}</p>
-                            <p>Times: {r.times?.join(', ')}</p>
-                        </li>
+                    <li key={r.id} className="border p-4 rounded shadow flex justify-between items-start">
+                        <div>
+                        <h3 className="text-lg font-semibold">{r.medication_name}</h3>
+                        <p>Type: {r.medication_type}</p>
+                        <p>Days: {r.days?.join(', ')}</p>
+                        <p>Times: {r.times?.join(', ')}</p>
+                        </div>
+                        <button
+                        onClick={() => handleDelete(r.id)}
+                        className="text-red-600 font-semibold hover:underline ml-4"
+                        >
+                        🗑️ Delete
+                        </button>
+                    </li>
                     ))}
+
                 </ul>
             )}
         </div>
