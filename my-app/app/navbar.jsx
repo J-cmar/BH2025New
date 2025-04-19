@@ -29,7 +29,7 @@ const Navbar = () => {
     {
       icon: <AiOutlineHome className="text-2xl" />,
       title: "Side Effects",
-      href: "/",
+      href: "/side-effects",
 
     },
     {
