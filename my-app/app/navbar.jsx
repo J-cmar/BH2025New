@@ -2,7 +2,9 @@
 import React, { useEffect, useState } from "react";
 import { AiOutlineHome } from "react-icons/ai";
 import { GiHamburgerMenu } from "react-icons/gi";
+import { IoSettingsOutline } from "react-icons/io5";
 import { BsShare } from "react-icons/bs";
+import { IoIosInformationCircleOutline } from "react-icons/io";
 import Link from "next/link";
 
 const Navbar = () => {
@@ -28,7 +30,7 @@ const Navbar = () => {
     {
       icon: <AiOutlineHome className="text-2xl" />,
       title: "Recall information",
-      href: "/",
+      href: "/recall-info",
     },
   ];
 
@@ -39,12 +41,12 @@ const Navbar = () => {
       href: "/",
     },
     {
-      icon: <AiOutlineHome className="text-2xl mr-2" />,
+      icon: <IoIosInformationCircleOutline  className="text-2xl mr-2" />,
       title: "About",
       href: "/about",
     },
     {
-      icon: <AiOutlineHome className="text-2xl" />,
+      icon: <IoSettingsOutline className="text-2xl" />,
       title: "Settings",
       href: "/",
     },
