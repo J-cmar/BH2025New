@@ -39,6 +39,11 @@ const Navbar = () => {
       href: "/",
     },
     {
+      icon: <AiOutlineHome className="text-2xl mr-2" />,
+      title: "About",
+      href: "/about",
+    },
+    {
       icon: <AiOutlineHome className="text-2xl" />,
       title: "Settings",
       href: "/",
