@@ -24,6 +24,7 @@ const localizer = dateFnsLocalizer({
 
 export default function ViewReminders() {
     const [reminders, setReminders] = useState([]);
+    const [events, setEvents] = useState([]);
     const router = useRouter();
     
     useEffect(() => {
@@ -42,26 +43,65 @@ export default function ViewReminders() {
     useEffect(() => {
         const fetchReminders = async () => {
             const { data, error } = await supabase.from('medication_schedule').select('*');
-
+    
             if (error) {
                 console.log(`Error fetching reminders: ${error.message}`);
             }
-
-            setReminders(data || []);
-        };
-
-        fetchReminders();
-        const remindersToEvents = (reminders) => {
-            const weekdays = {
-                Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6, Sun: 0,
-            };
     
-            const today = new Date();
-            const baseDay = startOfWeek(today, { weekStartsOn: 0 });
-            const events = [];
+            setReminders(data || []);
+            setEvents(remindersToEvents(data || [])); 
         };
-
+    
+        fetchReminders();
     }, []);
+    
+
+    const remindersToEvents = (reminders) => {
+        const weekdays = {
+            Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6
+        };
+    
+        const today = new Date();
+        const baseWeekStart = startOfWeek(today, { weekStartsOn: 0 });
+    
+        const events = [];
+    
+        reminders.forEach((item) => {
+            const days = Array.isArray(item.days) ? item.days : [];
+            const times = Array.isArray(item.times) ? item.times : [];
+    
+            days.forEach((dayStr) => {
+                const dayAbbrev = dayStr.slice(0, 3).toLowerCase().replace(/^./, str => str.toUpperCase());
+                const weekdayNum = weekdays[dayAbbrev];
+    
+                if (weekdayNum === undefined) return;
+    
+                times.forEach((timeStr) => {
+                    const [hour, minute] = timeStr.split(':').map(Number);
+                    const eventDate = new Date(baseWeekStart);
+    
+                    eventDate.setDate(baseWeekStart.getDate() + ((weekdayNum - baseWeekStart.getDay() + 7) % 7));
+                    eventDate.setHours(hour);
+                    eventDate.setMinutes(minute);
+                    eventDate.setSeconds(0);
+    
+                    const endDate = new Date(eventDate);
+                    endDate.setMinutes(endDate.getMinutes() + 30);
+    
+                    events.push({
+                        title: `${item.medication_name} (${item.medication_type})`,
+                        start: eventDate,
+                        end: endDate,
+                        allDay: false,
+                    });
+                });
+            });
+        });
+    
+        return events;
+    };
+    
+
     return(<>
         <Navbar className="navbar" />
 
@@ -83,6 +123,18 @@ export default function ViewReminders() {
                     ))}
                 </ul>
             )}
-        </div></>
+        </div>
+        <div>
+            <h2 className="text-xl font-semibold mt-8 mb-4">Calendar View</h2>
+            <Calendar
+            localizer={localizer}
+            events={events}
+            startAccessor="start"
+            endAccessor="end"
+            style={{ height: 600 }}
+            defaultView="week"
+            />
+        </div>
+        </>
     );
 }
