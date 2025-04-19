@@ -1,7 +1,7 @@
 import puppeteer from "puppeteer";
 
 export default async function getDrugConflicts(drugName){
-  const browser = await puppeteer.launch({ headless: false });
+  const browser = await puppeteer.launch({ headless: true });
   const page = await browser.newPage();
 
   await page.goto("https://www.drugs.com/drug_interactions.html");

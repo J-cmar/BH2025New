@@ -1,4 +1,4 @@
-import getDrugConflicts from "@/app/conflictsScraper";
+import getDrugConflicts from "@/app/util/conflictsScraper";
 
 
 export async function POST(req, res){
