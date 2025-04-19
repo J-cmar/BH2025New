@@ -59,10 +59,12 @@ export default function ViewReminders() {
 
 
     const remindersToEvents = (reminders) => {
+        const weeksToShow = 4; // Show events for the next 4 weeks
         const weekdays = {
             Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6
         };
 
+        const events = [];
         const today = new Date();
         // Base week start of the current week
         const currentWeekStart = startOfWeek(today, { weekStartsOn: 0 });
