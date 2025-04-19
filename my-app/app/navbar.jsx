@@ -2,7 +2,10 @@
 import React, { useEffect, useState } from "react";
 import { AiOutlineHome } from "react-icons/ai";
 import { GiHamburgerMenu } from "react-icons/gi";
+import { IoSettingsOutline } from "react-icons/io5";
 import { BsShare } from "react-icons/bs";
+import { IoIosInformationCircleOutline } from "react-icons/io";
+import Link from "next/link";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -10,34 +13,42 @@ const Navbar = () => {
   const sideList = [
     {
       icon: <AiOutlineHome className="text-2xl" />,
-      title: "item 1",
+      title: "Side Effects",
+      href: "/",
+      
     },
     {
       icon: <AiOutlineHome className="text-2xl" />,
-      title: "item 2",
+      title: "Medication Conflicts",
+      href: "/",
     },
     {
       icon: <AiOutlineHome className="text-2xl" />,
-      title: "item 3",
+      title: "Medication Availability",
+      href: "/",
     },
     {
       icon: <AiOutlineHome className="text-2xl" />,
-      title: "item 4",
+      title: "Recall information",
+      href: "/recall-info",
     },
   ];
 
   const navList = [
     {
       icon: <AiOutlineHome className="text-2xl mr-2" />,
-      title: "item",
+      title: "Home",
+      href: "/",
     },
     {
-      icon: <AiOutlineHome className="text-2xl" />,
-      title: "",
+      icon: <IoIosInformationCircleOutline  className="text-2xl mr-2" />,
+      title: "About",
+      href: "/about",
     },
     {
-      icon: <AiOutlineHome className="text-2xl" />,
-      title: "",
+      icon: <IoSettingsOutline className="text-2xl" />,
+      title: "Settings",
+      href: "/",
     },
   ];
 
@@ -66,7 +77,7 @@ const Navbar = () => {
   }, [isOpen]);
 
   return (
-    <nav className="flex  w-full items-center justify-between px-6 h-16 bg-white text-gray-700 border-b border-gray-200 z-10">
+    <nav className="sticky top-0 flex w-full items-center justify-between px-6 h-16 bg-white text-gray-700 border-b border-gray-200 z-50">
       <div className="flex items-center">
         <button className="mr-2" aria-label="Open Menu" onClick={handleDrawer}>
           <GiHamburgerMenu className="text-3xl" />
@@ -81,18 +92,18 @@ const Navbar = () => {
 
       <div className="flex items-center">
         <div className="hidden md:flex md:justify-between md:bg-transparent">
-          {navList.map(({ icon, title }, index) => {
-            return (
-              <button
-                key={index}
-                title="Wishlist"
+        {navList.map(({ icon, title, href }, index) => (
+            <Link key={index} href={href || "#"}>
+                <button
+                title={title}
                 className="flex items-center p-3 font-medium mr-2 text-center bg-gray-300 rounded hover:bg-gray-400 focus:outline-none focus:bg-gray-400"
-              >
+                >
                 <span>{icon}</span>
                 <span>{title}</span>
-              </button>
-            );
-          })}
+                </button>
+            </Link>
+            ))}
+
         </div>
       </div>
 
@@ -118,16 +129,15 @@ const Navbar = () => {
             className="h-auto w-32 mx-auto"
           />
         </span>
-        {sideList.map(({ icon, title }, index) => {
-          return (
-            <span
-              key={index}
-              className="flex items-center p-4 hover:bg-pink-500 hover:text-white "
-            >
-              <span className="mr-2">{icon}</span> <span>{title}</span>
-            </span>
-          );
-        })}
+            {sideList.map(({ icon, title, href }, index) => (
+            <Link key={index} href={href || "#"}>
+                <span className="flex items-center p-4 hover:bg-pink-500 hover:text-white cursor-pointer">
+                <span className="mr-2">{icon}</span>
+                <span>{title}</span>
+                </span>
+            </Link>
+            ))}
+
         <div className="fixed bottom-0 w-full">
           <button className="flex items-center p-4 text-white bg-blue-500 hover:bg-blue-600 w-full">
             <span className="mr-2">
