@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Navbar from "../navbar";
+import Map from "../components/map"
 
 export default function MedicationAvailabilityPage() {
     const [allMeds, setAllMeds] = useState([]);
@@ -146,6 +147,10 @@ export default function MedicationAvailabilityPage() {
                                     </li>
                                 ))}
                             </ul>
+                            {/* Pass addresses to the Map component */}
+                            <Map
+                                addresses={results.flatMap((store) => store.locations)}
+                            />
                         </div>
                     )}
                 </div>

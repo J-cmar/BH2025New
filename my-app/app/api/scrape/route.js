@@ -49,6 +49,9 @@ export async function POST(request) {
             // Click the "Show Location" button
             const showLocationButton = await store.$('.dxb');
             if (showLocationButton) {
+                await showLocationButton.evaluate((btn) => btn.scrollIntoView());
+            }
+            if (showLocationButton) {
                 await showLocationButton.click();
                 await page.waitForSelector('#PopupControl_PWC-1 > div.row', { timeout: 5000 }); // Wait for locations to load
 
