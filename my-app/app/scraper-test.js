@@ -4,7 +4,7 @@ const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const drugName = 'Xanax';
 
 (async () => {
-    const browser = await puppeteer.launch({ headless: false });
+    const browser = await puppeteer.launch({ headless: true });
     const page = await browser.newPage();
 
     await page.goto('https://scriptcost.com/scriptcycle/DrugPriceLookup/DrugLookupResult');
@@ -50,17 +50,17 @@ const drugName = 'Xanax';
                         forms.forEach((form) => {
                             const rows = form.querySelectorAll('table tbody tr');
                             const rowData = Array.from(rows)
-                                .slice(1, -1) // skip first and last rows
+                                .slice(2, -1) // skip first and last rows
                                 .map((row, index) => {
                                     const tds = row.querySelectorAll('td');
                                     if (index === rows.length - 3) {
                                         // second-to-last row (before last one was sliced off)
                                         return Array.from(tds)
                                             .filter((_, tdIndex) => tdIndex !== 1) // Skip unwanted <td>
-                                            .map((td) => td.textContent.trim())
+                                            .map((td) => td.textContent.replace(/get discount/i, '').trim())
                                             .join(' ');
                                     } else {
-                                        return Array.from(tds).map((td) => td.textContent.trim()).join(' ');
+                                        return Array.from(tds).map((td) => td.textContent.replace(/get discount/i, '').trim()).join(' ');
                                     }
                                 });
                             allLocations.push(rowData.join(' | ')); // or push rowData array if you want structure
