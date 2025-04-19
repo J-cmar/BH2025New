@@ -3,24 +3,17 @@ import puppeteer from 'puppeteer';
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const drugName = 'Xanax';
 
-
 (async () => {
-    const browser = await puppeteer.launch({ headless: true });
+    const browser = await puppeteer.launch({ headless: false });
     const page = await browser.newPage();
 
     await page.goto('https://scriptcost.com/scriptcycle/DrugPriceLookup/DrugLookupResult');
     await page.setViewport({ width: 1080, height: 1024 });
+
     const drugInput = await page.waitForSelector('#DrugName_I');
-    await drugInput.type(drugName.slice(0, -1));
-    await page.waitForSelector('#DrugName_DDD_L_LBT > tbody')
-    const firstResult = await page.waitForSelector('#DrugName_DDD_L_LBT > tbody tr'); // selector for autocomplete table
-
-    const [tbodyHandle] = await page.$$('::-p-xpath(//*[@id="DrugName_DDD_L_LBT"]/tbody)');
-
-    const rowCount = await tbodyHandle.evaluate(tbody => tbody.querySelectorAll('tr').length);
-
-    console.log('Row count:', rowCount);
-
+    await drugInput.type('Xanax');
+    await page.waitForSelector('#DrugName_DDD_L_LBT > tbody');
+    const firstResult = await page.waitForSelector('#DrugName_DDD_L_LBT > tbody tr');
 
     console.log('First autocomplete suggestion:', firstResult);
     await delay(200);
@@ -31,25 +24,63 @@ const drugName = 'Xanax';
     await submitButton.click();
 
     await page.waitForSelector('#BodyContentWrapper > div.container.result-display-settings', { timeout: 10000 });
-    console.log('result page')
+    console.log('Result page loaded.');
 
     // Extract all store names and prices
-    const stores = await page.$$eval('.store-price-list form', forms =>
-        forms.map(form => {
-            const name = form.querySelector('.network-name')?.innerText.trim() || 'N/A';
-            const price = form.querySelector('.network-price .price')?.innerText.trim() || 'N/A';
-            return { name, price };
-        })
-    );
+    const stores = await page.$$('.store-price-list form');
+    const results = [];
 
-    console.log('Drug Prices by Store:\n', stores);
+    for (const store of stores) {
+        const name = await store.$eval('.network-name', (el) => el.textContent.trim());
+        const price = await store.$eval('.network-price .price', (el) => el.textContent.trim());
+
+        // Click the "Show Location" button
+        const showLocationButton = await store.$('.dxb');
+        if (showLocationButton) {
+            await showLocationButton.click();
+            await page.waitForSelector('#PopupControl_PWC-1 > div.row', { timeout: 5000 }); // Wait for locations to load
+
+            // Extract locations
+            const locations = await page.$$eval(
+                '#PopupControl_PWC-1 > div.row > div.col-lg-6.store-price-list',
+                (storeDivs) => {
+                    const allLocations = [];
+                    storeDivs.forEach((storeDiv) => {
+                        const forms = storeDiv.querySelectorAll('form');
+                        forms.forEach((form) => {
+                            const rows = form.querySelectorAll('table tbody tr');
+                            const rowData = Array.from(rows)
+                                .slice(1, -1) // skip first and last rows
+                                .map((row, index) => {
+                                    const tds = row.querySelectorAll('td');
+                                    if (index === rows.length - 3) {
+                                        // second-to-last row (before last one was sliced off)
+                                        return Array.from(tds)
+                                            .filter((_, tdIndex) => tdIndex !== 1) // Skip unwanted <td>
+                                            .map((td) => td.textContent.trim())
+                                            .join(' ');
+                                    } else {
+                                        return Array.from(tds).map((td) => td.textContent.trim()).join(' ');
+                                    }
+                                });
+                            allLocations.push(rowData.join(' | ')); // or push rowData array if you want structure
+                        });
+                    });
+                    return allLocations;
+                }
+            );
+
+
+            results.push({ name, price, locations });
+        } else {
+            results.push({ name, price, locations: [] });
+        }
+        const exit_btn = await page.waitForSelector('#PopupControl_HCB-1');
+        await exit_btn.click();
+        await delay(500); // Small delay between interactions
+    }
+
+    console.log('Drug Prices and Locations by Store:\n', results);
 
     await browser.close();
 })();
-
-
-// drug description
-// #BodyContentWrapper > div.container.result-display-settings > div.row > div.col-lg-9.result-right-col > div:nth-child(1) > div > div.drug-summary
-
-// drug price list
-// #BodyContentWrapper > div.container.result-display-settings > div.row > div.col-lg-9.result-right-col > div:nth-child(3) > div > div.drug-price-results
