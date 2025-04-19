@@ -50,43 +50,26 @@ export default function About() {
             <h2 className="text-2xl font-semibold mb-6">Meet the Team</h2>
             <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3">
               <div className="bg-gray-50 p-4 rounded-lg shadow text-center">
-                <img
-                  src="https://via.placeholder.com/80"
-                  alt="Jane Doe"
-                  className="mx-auto rounded-full mb-3 w-20 h-20 object-cover"
-                />
-                <h3 className="font-bold">Jane Doe</h3>
-                <p className="text-sm text-gray-600">CEO</p>
+                
+                <h3 className="font-bold">Joshua Estrada</h3>
+                <p className="text-sm text-gray-600">Developer</p>
               </div>
 
               <div className="bg-gray-50 p-4 rounded-lg shadow text-center">
-                <img
-                  src="https://via.placeholder.com/80"
-                  alt="John Smith"
-                  className="mx-auto rounded-full mb-3 w-20 h-20 object-cover"
-                />
-                <h3 className="font-bold">John Smith</h3>
-                <p className="text-sm text-gray-600">CTO</p>
+                <h3 className="font-bold">Jason Mar</h3>
+                <p className="text-sm text-gray-600">Developer</p>
               </div>
 
               <div className="bg-gray-50 p-4 rounded-lg shadow text-center">
-                <img
-                  src="https://via.placeholder.com/80"
-                  alt="Sara Lee"
-                  className="mx-auto rounded-full mb-3 w-20 h-20 object-cover"
-                />
-                <h3 className="font-bold">Sara Lee</h3>
-                <p className="text-sm text-gray-600">Product Manager</p>
+                
+                <h3 className="font-bold">Manson Pham</h3>
+                <p className="text-sm text-gray-600">Developer</p>
               </div>
 
               <div className="bg-gray-50 p-4 rounded-lg shadow text-center">
-                <img
-                  src="https://via.placeholder.com/80"
-                  alt="Sara Lee"
-                  className="mx-auto rounded-full mb-3 w-20 h-20 object-cover"
-                />
-                <h3 className="font-bold">Sara Lee</h3>
-                <p className="text-sm text-gray-600">Product Manager</p>
+                
+                <h3 className="font-bold">Michael Castillo</h3>
+                <p className="text-sm text-gray-600">Developer</p>
               </div>
             </div>
           </section>
