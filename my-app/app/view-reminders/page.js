@@ -1,8 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { supabase } from '../supabaseClient.js';
 import Navbar from '../navbar';
-import {  useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient.js'; 
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
 import format from 'date-fns/format';
@@ -25,6 +23,7 @@ const localizer = dateFnsLocalizer({
 
 export default function ViewReminders() {
     const [reminders, setReminders] = useState([]);
+    const [events, setEvents] = useState([]);
 
     useEffect(() => {
         const fetchReminders = async () => {
@@ -41,18 +40,48 @@ export default function ViewReminders() {
 
     }, []);
 
-    return (<>
-        <Navbar className="navbar" />
-
     const remindersToEvents = (reminders) => {
         const weekdays = {
-            Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6, Sun: 0,
+            Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6, Sun: 0
         };
 
         const today = new Date();
-        const baseDay = startOfWeek(today, { weekStartsOn: 0 });
+        const baseWeekStart = startOfWeek(today, { weekStartsOn: 0 });
+
         const events = [];
+
+        reminders.forEach((item) => {
+            item.days?.forEach((dayStr) => {
+                const dayAbbrev = dayStr.slice(0, 3);
+                const weekdayNum = weekdays[dayAbbrev];
+
+                item.times?.forEach((timeStr) => {
+                    const [hour, minute] = timeStr.split(':').map(Number);
+                    const eventDate = new Date(baseWeekStart);
+
+                    eventDate.setDate(baseWeekStart.getDate() + ((weekdayNum - baseWeekStart.getDay() + 7) % 7));
+                    eventDate.setHours(hour);
+                    eventDate.setMinutes(minute);
+                    eventDate.setSeconds(0);
+
+                    const endDate = new Date(eventDate);
+                    endDate.setMinutes(endDate.getMinutes() + 30);
+
+                    events.push({
+                        title: `${item.medication_name} (${item.medication_type})`,
+                        start: eventDate,
+                        end: endDate,
+                        allDay: false,
+                    });
+                });
+            });
+        });
+
+        return events;
     };
+
+    return (<>
+        <Navbar className="navbar" />
 
     return(
         <div className="p-4">
@@ -72,6 +101,18 @@ export default function ViewReminders() {
                     ))}
                 </ul>
             )}
-        </div></>
+        </div>
+        <div>
+            <h2 className="text-xl font-semibold mt-8 mb-4">Calendar View</h2>
+            <Calendar
+            localizer={localizer}
+            events={events}
+            startAccessor="start"
+            endAccessor="end"
+            style={{ height: 600 }}
+            defaultView="week"
+            />
+        </div>
+        </>
     );
 }
