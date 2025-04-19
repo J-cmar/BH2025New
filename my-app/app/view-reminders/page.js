@@ -2,6 +2,8 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabaseClient.js';
 import Navbar from '../navbar';
+import {  useState, useEffect } from 'react';
+import { supabase } from '../supabaseClient.js'; 
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
 import format from 'date-fns/format';
 import parse from 'date-fns/parse';
@@ -23,6 +25,7 @@ const localizer = dateFnsLocalizer({
 
 export default function ViewReminders() {
     const [reminders, setReminders] = useState([]);
+    const [events, setEvents] = useState([]);
 
     useEffect(() => {
         const fetchReminders = async () => {
@@ -36,15 +39,21 @@ export default function ViewReminders() {
         };
 
         fetchReminders();
-        const remindersToEvents = (reminders) => {
-            const weekdays = {
-                Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6, Sun: 0,
-            };
-    
-            const today = new Date();
-            const baseDay = startOfWeek(today, { weekStartsOn: 0 });
-            const events = [];
+
+    }, []);
+
+    return (<>
+        <Navbar className="navbar" />
+
+    const remindersToEvents = (reminders) => {
+        const weekdays = {
+            Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6, Sun: 0,
         };
+
+        const today = new Date();
+        const baseDay = startOfWeek(today, { weekStartsOn: 0 });
+        const events = [];
+    };
 
     }, []);
     return(<>
@@ -68,6 +77,18 @@ export default function ViewReminders() {
                     ))}
                 </ul>
             )}
-        </div></>
+        </div>
+        <div>
+            <h2 className="text-xl font-semibold mt-8 mb-4">Calendar View</h2>
+            <Calendar
+            localizer={localizer}
+            events={events}
+            startAccessor="start"
+            endAccessor="end"
+            style={{ height: 600 }}
+            defaultView="week"
+            />
+        </div>
+        </>
     );
 }
