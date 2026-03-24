@@ -38,3 +38,9 @@ Supabase manages user sessions and stores sensitive medication schedules securel
 1st Place Overall – BroncoHacks 2025
 
 Best Web Development Project – BroncoHacks 2025
+
+## 👥 Team Members 
+- Michael Castillo
+- Joshua Estrada
+- Jason Mar
+- Mason Pham
